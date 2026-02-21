@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TypeArena | Multiplayer</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Fira+Code:wght@500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        
+        <section id="view-home" class="view active">
+            <div class="glass-panel text-center home-panel">
+                <div class="logo-container">
+                    <h1 class="logo pulse-glow">Type<span class="neon-text">Arena</span></h1>
+                </div>
+                <p class="subtitle">Klavye hızını test et, sınırları zorla.</p>
+                
+                <input type="text" id="username" placeholder="Savaşçı Adın" autocomplete="off" spellcheck="false" autocapitalize="off" autocorrect="off">
+                
+                <div class="button-group">
+                    <button class="btn btn-outline" onclick="app.startSinglePlayer()">Bireysel Antrenman</button>
+                    <button class="btn btn-primary neon-btn" onclick="app.createRoom()">Oda Kur</button>
+                </div>
+                
+                <div class="divider"><span>VEYA</span></div>
+                
+                <div class="join-group">
+                    <input type="text" id="room-code" placeholder="Oda Kodu" autocomplete="off" style="width: 50%;">
+                    <button class="btn btn-secondary" onclick="app.joinRoom()">Katıl</button>
+                </div>
+
+                <div class="divider mt-20"><span>REKORLAR</span></div>
+                <button class="btn btn-outline full-width" onclick="app.showLocalLeaderboard()">🏆 Bireysel Rekorlarım</button>
+            </div>
+        </section>
+
+        <section id="view-local-leaderboard" class="view">
+            <div class="glass-panel text-center">
+                <h2 style="margin-bottom: 20px;" class="neon-text">En İyi Antrenman Skorların</h2>
+                <div class="leaderboard-container" style="background: rgba(0,0,0,0.3); border-radius: 12px; padding: 15px; max-height: 250px; overflow-y: auto; margin-bottom: 20px;">
+                    <table style="width: 100%; text-align: left; border-collapse: collapse;">
+                        <thead>
+                            <tr style="color: #64748b; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                <th style="padding: 10px;">Tarih</th>
+                                <th style="padding: 10px;">Hız (DKS)</th>
+                                <th style="padding: 10px;">Doğruluk</th>
+                            </tr>
+                        </thead>
+                        <tbody id="local-records-list"></tbody>
+                    </table>
+                </div>
+                <button class="btn btn-primary full-width neon-btn" onclick="app.showView('view-home')">Ana Menüye Dön</button>
+            </div>
+        </section>
+
+        <section id="view-lobby" class="view">
+            <div class="glass-panel">
+                <div class="view-header">
+                    <button class="btn-back" onclick="app.showView('view-home')">⬅ Çıkış</button>
+                    <h2>Oda: <span id="display-room-code" class="neon-text">#0000</span></h2>
+                </div>
+                <div class="color-palette-container" style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                    <p style="color: #94a3b8; font-size: 0.95rem; margin-bottom: 15px; text-align: center;">Arabanın Rengini Seç</p>
+                    <div id="color-palette" style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;"></div>
+                </div>
+                <div class="players-container">
+                    <h3>Savaşçılar (<span id="player-count">1</span>/15)</h3>
+                    <ul id="player-list" class="player-list"></ul>
+                </div>
+                <button class="btn btn-primary full-width neon-btn" onclick="app.startMultiplayerGame()">Savaşı Başlat</button>
+            </div>
+        </section>
+
+        <section id="view-race" class="view">
+            <div class="view-header" style="display: flex; justify-content: space-between; align-items: center; position: relative;">
+                
+                <button class="btn-back" onclick="app.showView('view-home')">⬅ Çıkış</button>
+                
+                <div id="combo-display" class="combo-hidden" style="position: absolute; left: 50%; transform: translateX(-50%);">
+                    🔥 KOMBO x<span id="combo-count">0</span>
+                </div>
+
+                <div class="race-stats">
+                    <div class="stat-pill neon-border">⏱ <span id="timer">60</span>s</div>
+                    <div class="stat-pill neon-border">DKS: <span id="wpm-live">0</span></div>
+                </div>
+            </div>
+            <div class="track-container" id="track-container"></div>
+            <div class="glass-panel typing-panel">
+                <div class="word-display" id="word-display"></div>
+                <input type="text" id="word-input" class="word-input" placeholder="Yazmaya başla..." autocomplete="off" spellcheck="false" autocapitalize="off" autocorrect="off">
+            </div>
+        </section>
+
+        <section id="view-results" class="view">
+            <div class="glass-panel text-center">
+                <h2 style="margin-bottom: 25px;">Maç Sonucu</h2>
+                
+                <div id="top-3-podium" style="display: flex; justify-content: center; align-items: flex-end; gap: 15px; height: 180px; margin-bottom: 30px;"></div>
+                
+                <div class="leaderboard-container" style="background: rgba(0,0,0,0.3); border-radius: 12px; padding: 15px; max-height: 180px; overflow-y: auto; margin-bottom: 20px;">
+                    <table style="width: 100%; text-align: left;"><tbody id="rest-of-leaderboard"></tbody></table>
+                </div>
+                
+                <div class="ultra-stats-grid">
+                    <div class="stat-card">
+                        <span class="label">Hız (DKS)</span>
+                        <span class="value neon-text" id="result-wpm">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="label">Doğruluk</span>
+                        <span class="value" id="result-acc">%0</span>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary full-width mt-20 neon-btn" onclick="app.showView('view-home')">Ana Menüye Dön</button>
+            </div>
+        </section>
+    </div>
+
+    <script> const BACKEND_URL = "https://typearena-backend-production.up.railway.app/ws"; </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
