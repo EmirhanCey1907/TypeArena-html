@@ -3,55 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TypeArena | Multiplayer</title>
+    <title>HızMeydanı | E-Spor Type Arena</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Fira+Code:wght@500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Fira+Code:wght@500&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="app-container">
+    <div class="app-container" id="main-container">
         
         <section id="view-home" class="view active">
             <div class="glass-panel text-center home-panel">
                 <div class="logo-container">
-                    <h1 class="logo pulse-glow">Type<span class="neon-text">Arena</span></h1>
+                    <h1 class="logo pulse-glow">Hız<span class="neon-text">Meydanı</span></h1>
                 </div>
-                <p class="subtitle">Klavye hızını test et, sınırları zorla.</p>
                 
-                <input type="text" id="username" placeholder="Savaşçı Adın" autocomplete="off" spellcheck="false" autocapitalize="off" autocorrect="off">
+                <input type="text" id="username" placeholder="Savaşçı Adın (Zorunlu)" autocomplete="off" spellcheck="false" autocapitalize="off" autocorrect="off">
                 
-                <div class="button-group">
-                    <button class="btn btn-outline" onclick="app.startSinglePlayer()">Bireysel Antrenman</button>
-                    <button class="btn btn-primary neon-btn" onclick="app.createRoom()">Oda Kur</button>
-                </div>
+                <button class="btn btn-outline full-width" onclick="app.startSinglePlayer()">Bireysel Antrenman</button>
+                <button class="btn btn-outline full-width mt-10" onclick="app.showLocalLeaderboard()">🏆 Bireysel Rekorlarım</button>
                 
                 <div class="divider"><span>VEYA</span></div>
                 
-                <div class="join-group">
-                    <input type="text" id="room-code" placeholder="Oda Kodu" autocomplete="off" style="width: 50%;">
-                    <button class="btn btn-secondary" onclick="app.joinRoom()">Katıl</button>
+                <button class="btn btn-primary full-width neon-btn" onclick="app.showModeSelect()">Oda Kur</button>
+                
+                <div class="join-group mt-10" style="display: flex; gap: 10px;">
+                    <input type="text" id="room-code" placeholder="Oda Kodu" autocomplete="off" style="margin: 0; flex: 2;">
+                    <button class="btn btn-secondary" style="flex: 1;" onclick="app.joinRoom()">Katıl</button>
                 </div>
 
-                <div class="divider mt-20"><span>REKORLAR</span></div>
-                <button class="btn btn-outline full-width" onclick="app.showLocalLeaderboard()">🏆 Bireysel Rekorlarım</button>
+                <div class="divider mt-20"><span>GLOBAL ARENA</span></div>
+                
+                <input type="text" id="global-username" placeholder="Adın (Zorunlu Değil)" autocomplete="off" spellcheck="false">
+                <button class="btn btn-primary full-width neon-btn" onclick="app.showGlobalArena()">Global Sıralamaya Katıl</button>
+            </div>
+            <div class="copyright">© 2026 Emirhan Ceyhanlı. Tüm Hakları Saklıdır.</div>
+        </section>
+
+        <section id="view-mode-select" class="view">
+            <div class="glass-panel text-center">
+                <h2 class="neon-text mb-20">Oyun Modunu Seç</h2>
+                
+                <div class="mode-card" onclick="app.createRoom('SERIKATIL')">
+                    <h3>🗡️ Seri Katil</h3>
+                    <p>Sadece doğru yazılan kelimeler sayılır. Yanlış yazarsan silemez, düzeltmek zorunda kalırsın. En çok kelime yazan kazanır.</p>
+                    <p style="color: #fbbf24; font-size: 0.8rem; margin-top: 5px; font-weight: bold;">(Adil yarış için 62'den geriye sayar, 60'ta başlar)</p>
+                </div>
+                
+                <div class="mode-card mt-10" onclick="app.createRoom('PROFESYONEL')">
+                    <h3>⚡ Profesyonel (DKS)</h3>
+                    <p>E-Spor Modu. Yanlış harfler hızından düşer. En yüksek DKS'ye ulaşan kazanır.</p>
+                    <p style="color: #fbbf24; font-size: 0.8rem; margin-top: 5px; font-weight: bold;">(Adil yarış için 62'den geriye sayar, 60'ta başlar)</p>
+                </div>
+
+                <button class="btn btn-outline full-width mt-20" onclick="app.showView('view-home')">⬅ Geri Dön</button>
+            </div>
+        </section>
+
+        <section id="view-global-arena" class="view">
+            <div class="split-screen">
+                <div class="glass-panel left-panel text-center">
+                    <h2 class="neon-text mb-20">Global Meydan</h2>
+                    <p style="color: #94a3b8; margin-bottom: 20px;">Top 5 efsanesinin arasına girmek için sınırlarını zorla. Puanın anında tabloya yansır.</p>
+                    <div class="color-palette-container" style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                        <p style="color: #94a3b8; font-size: 0.95rem; margin-bottom: 15px;">Arabanın Rengini Seç</p>
+                        <div id="global-color-palette" style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;"></div>
+                    </div>
+                    <button class="btn btn-primary full-width neon-btn" onclick="app.startGlobalRace()">Yarışa Başla</button>
+                    <button class="btn btn-outline full-width mt-10" onclick="app.showView('view-home')">⬅ Çıkış</button>
+                </div>
+                
+                <div class="glass-panel right-panel">
+                    <h2 class="mb-20" style="text-align: center;">🏆 Top 5 Efsaneler</h2>
+                    <table class="leaderboard-table" style="width: 100%;">
+                        <thead><tr><th>Sıra</th><th>Savaşçı</th><th>DKS</th></tr></thead>
+                        <tbody id="top5-list"><tr><td colspan="3" style="text-align:center;">Yükleniyor...</td></tr></tbody>
+                    </table>
+                </div>
             </div>
         </section>
 
         <section id="view-local-leaderboard" class="view">
             <div class="glass-panel text-center">
-                <h2 style="margin-bottom: 20px;" class="neon-text">En İyi Antrenman Skorların</h2>
-                <div class="leaderboard-container" style="background: rgba(0,0,0,0.3); border-radius: 12px; padding: 15px; max-height: 250px; overflow-y: auto; margin-bottom: 20px;">
-                    <table style="width: 100%; text-align: left; border-collapse: collapse;">
-                        <thead>
-                            <tr style="color: #64748b; border-bottom: 1px solid rgba(255,255,255,0.1);">
-                                <th style="padding: 10px;">Tarih</th>
-                                <th style="padding: 10px;">Hız (DKS)</th>
-                                <th style="padding: 10px;">Doğruluk</th>
-                            </tr>
-                        </thead>
+                <h2 style="margin-bottom: 20px;" class="neon-text">Bireysel Rekorların</h2>
+                <div class="leaderboard-container">
+                    <table class="leaderboard-table" style="width: 100%;">
+                        <thead><tr><th>Tarih</th><th>Hız (DKS)</th><th>Doğruluk</th></tr></thead>
                         <tbody id="local-records-list"></tbody>
                     </table>
                 </div>
-                <button class="btn btn-primary full-width neon-btn" onclick="app.showView('view-home')">Ana Menüye Dön</button>
+                <button class="btn btn-primary full-width neon-btn mt-20" onclick="app.showView('view-home')">Ana Menüye Dön</button>
             </div>
         </section>
 
@@ -61,8 +100,8 @@
                     <button class="btn-back" onclick="app.showView('view-home')">⬅ Çıkış</button>
                     <h2>Oda: <span id="display-room-code" class="neon-text">#0000</span></h2>
                 </div>
+                <div style="text-align: center; margin-bottom: 10px; color: #fbbf24; font-weight: bold;" id="lobby-mode-text"></div>
                 <div class="color-palette-container" style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
-                    <p style="color: #94a3b8; font-size: 0.95rem; margin-bottom: 15px; text-align: center;">Arabanın Rengini Seç</p>
                     <div id="color-palette" style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;"></div>
                 </div>
                 <div class="players-container">
@@ -75,44 +114,51 @@
 
         <section id="view-race" class="view">
             <div class="view-header" style="display: flex; justify-content: space-between; align-items: center; position: relative;">
-                
                 <button class="btn-back" onclick="app.showView('view-home')">⬅ Çıkış</button>
-                
                 <div id="combo-display" class="combo-hidden" style="position: absolute; left: 50%; transform: translateX(-50%);">
                     🔥 KOMBO x<span id="combo-count">0</span>
                 </div>
-
                 <div class="race-stats">
                     <div class="stat-pill neon-border">⏱ <span id="timer">60</span>s</div>
-                    <div class="stat-pill neon-border">DKS: <span id="wpm-live">0</span></div>
                 </div>
             </div>
+            
+            <div id="countdown-overlay" style="display:none; text-align:center; color:#fbbf24; font-size:1.5rem; font-weight:bold; margin-bottom:15px; text-shadow: 0 0 10px rgba(251,191,36,0.5);">
+                Yarış başlıyor... Hazırlan! 🔒
+            </div>
+
             <div class="track-container" id="track-container"></div>
             <div class="glass-panel typing-panel">
                 <div class="word-display" id="word-display"></div>
-                <input type="text" id="word-input" class="word-input" placeholder="Yazmaya başla..." autocomplete="off" spellcheck="false" autocapitalize="off" autocorrect="off">
+                <input type="text" id="word-input" class="word-input" placeholder="Yazmaya başla..." autocomplete="off" spellcheck="false" autocapitalize="off" autocorrect="off" onpaste="return false;" ondrop="return false;">
             </div>
         </section>
 
         <section id="view-results" class="view">
             <div class="glass-panel text-center">
-                <h2 style="margin-bottom: 25px;">Maç Sonucu</h2>
+                <h2 style="margin-bottom: 15px;">Maç Sonucu</h2>
+                <h3 id="result-tebrik" class="neon-text" style="margin-bottom: 25px; font-size: 1.2rem;"></h3>
                 
-                <div id="top-3-podium" style="display: flex; justify-content: center; align-items: flex-end; gap: 15px; height: 180px; margin-bottom: 30px;"></div>
-                
-                <div class="leaderboard-container" style="background: rgba(0,0,0,0.3); border-radius: 12px; padding: 15px; max-height: 180px; overflow-y: auto; margin-bottom: 20px;">
-                    <table style="width: 100%; text-align: left;"><tbody id="rest-of-leaderboard"></tbody></table>
+                <div class="ff-result-container">
+                    <div class="dks-big-display">
+                        <span id="result-wpm" style="font-size: 5rem; font-weight: 800; color: #84cc16; line-height: 1;">0</span>
+                        <span style="font-size: 1.5rem; color: #64748b; display: block; margin-top: -10px;">DKS</span>
+                        <span style="font-size: 0.9rem; color: #94a3b8;">(dakikadaki kelime sayısı)</span>
+                    </div>
+                    
+                    <table class="ff-table">
+                        <tr><td>Tuş Vuruşu</td><td style="text-align: right;">(<span class="text-green" id="res-keys-correct">0</span> | <span class="text-red" id="res-keys-wrong">0</span>) <span id="res-keys-total" style="font-weight: bold;">0</span></td></tr>
+                        <tr><td>Doğruluk</td><td style="text-align: right; font-weight: bold; font-size: 1.2rem;" id="res-accuracy">%0</td></tr>
+                        <tr><td>Doğru Kelime</td><td style="text-align: right; font-weight: bold; color: #10b981; font-size: 1.2rem;" id="res-words-correct">0</td></tr>
+                        <tr><td>Yanlış Kelime</td><td style="text-align: right; font-weight: bold; color: #ef4444; font-size: 1.2rem;" id="res-words-wrong">0</td></tr>
+                    </table>
                 </div>
-                
-                <div class="ultra-stats-grid">
-                    <div class="stat-card">
-                        <span class="label">Hız (DKS)</span>
-                        <span class="value neon-text" id="result-wpm">0</span>
-                    </div>
-                    <div class="stat-card">
-                        <span class="label">Doğruluk</span>
-                        <span class="value" id="result-acc">%0</span>
-                    </div>
+
+                <div id="mp-leaderboard" style="display: none; margin-top: 25px;">
+                    <h3 style="margin-bottom: 10px; color: #94a3b8;">Oyuncu Sıralaması</h3>
+                    <table class="leaderboard-table" style="width: 100%; font-size: 0.9rem;">
+                        <tbody id="rest-of-leaderboard"></tbody>
+                    </table>
                 </div>
                 
                 <button class="btn btn-primary full-width mt-20 neon-btn" onclick="app.showView('view-home')">Ana Menüye Dön</button>
@@ -121,6 +167,8 @@
     </div>
 
     <script> const BACKEND_URL = "https://typearena-backend-production.up.railway.app/ws"; </script>
+    <script> const API_URL = "https://typearena-backend-production.up.railway.app/api/leaderboard"; </script>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
     <script src="script.js"></script>
